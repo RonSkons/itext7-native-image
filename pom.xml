@@ -396,6 +396,7 @@
         <artifactId>maven-surefire-plugin</artifactId>
         <version>${surefire.version}</version>
         <configuration>
+          <argLine>${native.image.agent}</argLine>
           <skipTests>${skipTests}</skipTests>
         </configuration>
       </plugin>
@@ -457,6 +458,16 @@
   </reporting>
 
   <profiles>
+    <profile>
+      <id>native</id>
+      <activation>
+        <activeByDefault>false</activeByDefault>
+      </activation>
+      <properties>
+        <skipTests>false</skipTests>
+        <native.image.agent>-agentlib:native-image-agent=config-output-dir=target/classes/META-INF/native-image/</native.image.agent>
+      </properties>
+    </profile>
     <profile>
       <id>java9+</id>
       <activation>
@@ -722,19 +733,19 @@
                   <goal>verify</goal>
                 </goals>
               </execution>
-            <execution>
-              <id>approved-mode</id>
-              <goals>
-                <goal>integration-test</goal>
-                <goal>verify</goal>
-              </goals>
-              <configuration>
-                <systemPropertyVariables>
-                  <org.bouncycastle.fips.approved_only>true</org.bouncycastle.fips.approved_only>
-                </systemPropertyVariables>
-              </configuration>
-            </execution>
-          </executions>
+              <execution>
+                <id>approved-mode</id>
+                <goals>
+                  <goal>integration-test</goal>
+                  <goal>verify</goal>
+                </goals>
+                <configuration>
+                  <systemPropertyVariables>
+                    <org.bouncycastle.fips.approved_only>true</org.bouncycastle.fips.approved_only>
+                  </systemPropertyVariables>
+                </configuration>
+              </execution>
+            </executions>
           </plugin>
           <plugin>
             <groupId>org.apache.maven.plugins</groupId>
